@@ -1,0 +1,5 @@
+raw/
+__pycache__/
+*.pyc
+ocr_remaining.log
+site/
