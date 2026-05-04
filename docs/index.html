@@ -127,6 +127,8 @@ label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;
 [data-theme="dark"] .score-circle{border-color:#93c5fd}
 [data-theme="dark"] .score-circle .score-num{color:#93c5fd}
 /* RESPONSIVE */
+html,body{overflow-x:hidden;width:100%}
+img,table,pre{max-width:100%;overflow-x:auto}
 @media(max-width:768px){
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
   .nav-links{display:none}
@@ -398,16 +400,50 @@ function loadData() {
 function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 function getData() { return loadData(); }
 
-// Load questions
+// CDN加速 + GitHub Pages回退
+const CDN_BASE = 'https://cdn.jsdelivr.net/gh/0xminmin2025/sat-exam@main/site/';
+const DATA_VER = '20260504';
+
+async function fetchJSON(filename, retries) {
+  retries = retries || 2;
+  const urls = [CDN_BASE + filename, filename];
+  for (const url of urls) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const resp = await fetch(url + '?v=' + DATA_VER);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return await resp.json();
+      } catch (e) {
+        if (i === retries - 1 && url === urls[urls.length - 1]) throw e;
+        if (i === retries - 1) break;
+        await new Promise(function(r) { setTimeout(r, 800); });
+      }
+    }
+  }
+}
+
+// Load questions with loading UI
 async function loadQuestions() {
+  // Show loading overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'loading-overlay';
+  overlay.innerHTML = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:1.25rem;font-weight:700;color:var(--primary);margin-bottom:.75rem">Loading Questions...</div><div id="load-progress" style="font-size:.9rem;color:var(--text-secondary)">Downloading data</div></div>';
+  document.body.appendChild(overlay);
+
   try {
-    const r = await fetch('questions.json');
-    questions = await r.json();
+    // Load both files in parallel
+    document.getElementById('load-progress').textContent = 'Loading question bank...';
+    var results = await Promise.all([fetchJSON('q_rw.json'), fetchJSON('q_math.json')]);
+    questions = results[0].concat(results[1]);
+
+    if (questions.length === 0) throw new Error('Question bank is empty');
+
+    overlay.remove();
     init();
   } catch(e) {
-    console.error('Failed to load questions.json:', e);
-    questions = [];
-    init();
+    console.error('Failed to load questions:', e);
+    var el = document.getElementById('load-progress');
+    if (el) el.innerHTML = '❌ Failed to load: ' + e.message + '<br><br><button onclick="location.reload()" style="padding:.625rem 1.5rem;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-weight:600">Retry</button>';
   }
 }
 
