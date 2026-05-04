@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAT Practice</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--primary:#1e293b;--primary-dark:#0f172a;--primary-light:#334155;
+--bg:#ffffff;--bg-secondary:#f8fafc;--bg-card:#ffffff;
+--text:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
+--border:#e2e8f0;--border-light:#f1f5f9;
+--red:#dc2626;--red-light:#fef2f2;--red-border:#fca5a5;
+--green:#16a34a;--green-light:#f0fdf4;
+--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+--shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+--radius:8px;--transition:all .2s ease;
+}
+[data-theme="dark"]{
+--bg:#0f172a;--bg-secondary:#1e293b;--bg-card:#1e293b;
+--text:#f1f5f9;--text-secondary:#94a3b8;--text-muted:#64748b;
+--border:#334155;--border-light:#1e293b;
+--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 6px rgba(0,0,0,.3);
+--red-light:#1c1111;--green-light:#0d1f0d;
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+/* NAV */
+.navbar{background:var(--primary);color:#fff;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.nav-brand{font-size:1.25rem;font-weight:700;letter-spacing:-.02em}
+.nav-links{display:flex;gap:.25rem}
+.nav-link{padding:.5rem .75rem;border-radius:6px;font-size:.875rem;cursor:pointer;transition:var(--transition);white-space:nowrap;color:rgba(255,255,255,.75)}
+.nav-link:hover,.nav-link.active{background:rgba(255,255,255,.15);color:#fff}
+.nav-link .badge{background:var(--red);color:#fff;font-size:.7rem;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:600}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.theme-toggle{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.8rem}
+.hamburger{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer}
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:1.5rem}
+.view{display:none;animation:fadeIn .3s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* CARDS */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.card-title{font-size:1.125rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.625rem 1.25rem;border-radius:var(--radius);font-size:.875rem;font-weight:600;cursor:pointer;border:none;transition:var(--transition)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-secondary{background:var(--bg-secondary);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn-sm{padding:.375rem .75rem;font-size:.8rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* FORM */
+select,input[type="text"],input[type="number"]{padding:.5rem .75rem;border:1px solid var(--border);border-radius:var(--radius);font-size:.875rem;background:var(--bg);color:var(--text);width:100%}
+select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,41,59,.1)}
+label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.25rem}
+/* GRID */
+.grid{display:grid;gap:1rem}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+/* PROGRESS BAR */
+.progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--primary);border-radius:4px;transition:width .5s ease}
+/* STAT */
+.stat-value{font-size:2rem;font-weight:800;color:var(--primary);line-height:1}
+.stat-label{font-size:.8rem;color:var(--text-secondary);margin-top:.25rem}
+[data-theme="dark"] .stat-value{color:#93c5fd}
+/* OPTIONS */
+.option-btn{display:flex;align-items:flex-start;gap:.75rem;padding:.875rem 1rem;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:var(--transition);background:var(--bg);text-align:left;width:100%;margin-bottom:.5rem;font-size:.9rem;line-height:1.5}
+.option-btn:hover:not(.disabled){border-color:var(--primary);background:var(--bg-secondary)}
+.option-btn .opt-letter{min-width:28px;height:28px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;border:1px solid var(--border)}
+.option-btn.selected{border-color:var(--primary);background:rgba(30,41,59,.05)}
+.option-btn.correct{border-color:var(--green);background:var(--green-light)}
+.option-btn.correct .opt-letter{background:var(--green);color:#fff;border-color:var(--green)}
+.option-btn.wrong{border-color:var(--red);background:var(--red-light)}
+.option-btn.wrong .opt-letter{background:var(--red);color:#fff;border-color:var(--red)}
+.option-btn.disabled{cursor:default}
+/* PASSAGE */
+.passage-box{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;font-size:.9rem;line-height:1.8;max-height:300px;overflow-y:auto}
+/* TIMER */
+.timer{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+.timer.warning{color:var(--red)}
+/* Q NAV */
+.q-nav{display:flex;flex-wrap:wrap;gap:4px}
+.q-nav-btn{width:36px;height:36px;border-radius:6px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--text)}
+.q-nav-btn.answered{background:var(--primary);color:#fff;border-color:var(--primary)}
+.q-nav-btn.current{box-shadow:0 0 0 2px var(--primary);border-color:var(--primary)}
+.q-nav-btn.flagged::after{content:'';position:absolute;top:2px;right:2px;width:6px;height:6px;background:orange;border-radius:50%}
+.q-nav-btn{position:relative}
+/* BAR CHART */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;padding-top:1rem}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+.bar{width:100%;background:var(--primary);border-radius:4px 4px 0 0;transition:height .5s ease;min-height:2px;margin-top:auto}
+.bar-label{font-size:.7rem;color:var(--text-secondary);margin-top:.5rem;text-align:center;word-break:break-all}
+.bar-value{font-size:.7rem;font-weight:700;margin-bottom:.25rem;color:var(--text)}
+/* WRONG ITEM */
+.wrong-item{border-left:3px solid var(--red);padding:.75rem 1rem;margin-bottom:.5rem;background:var(--red-light);border-radius:0 var(--radius) var(--radius) 0}
+.wrong-item .q-meta{font-size:.75rem;color:var(--text-muted);margin-bottom:.25rem}
+/* FILTER ROW */
+.filter-row{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
+.filter-row>div{flex:1;min-width:150px}
+/* TABS */
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--border);margin-bottom:1rem}
+.tab{padding:.5rem 1rem;cursor:pointer;font-size:.875rem;font-weight:600;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--transition)}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+[data-theme="dark"] .tab.active{color:#93c5fd;border-bottom-color:#93c5fd}
+/* MOBILE NAV */
+.mobile-nav{display:none;position:fixed;top:56px;left:0;right:0;background:var(--primary);padding:.5rem;z-index:99;flex-direction:column;box-shadow:0 4px 8px rgba(0,0,0,.2)}
+.mobile-nav.show{display:flex}
+.mobile-nav .nav-link{padding:.75rem 1rem}
+/* REVIEW INTERVAL */
+.review-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+.review-btns .btn{font-size:.75rem;padding:.25rem .5rem}
+/* SCORE REPORT */
+.score-circle{width:120px;height:120px;border-radius:50%;border:6px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1rem}
+.score-circle .score-num{font-size:2rem;font-weight:800;color:var(--primary)}
+.score-circle .score-label{font-size:.7rem;color:var(--text-secondary)}
+[data-theme="dark"] .score-circle{border-color:#93c5fd}
+[data-theme="dark"] .score-circle .score-num{color:#93c5fd}
+/* RESPONSIVE */
+@media(max-width:768px){
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hamburger{display:block}
+  .main{padding:1rem}
+  .filter-row>div{min-width:100%}
+  .bar-chart{height:120px}
+}
+@media(min-width:769px){
+  .mobile-nav{display:none!important}
+}
+/* SPLIT LAYOUT for practice */
+.split-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:900px){.split-layout{grid-template-columns:1fr}}
+/* EXAM LAYOUT */
+.exam-header{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.exam-body{display:grid;grid-template-columns:1fr 200px;gap:1rem}
+@media(max-width:768px){.exam-body{grid-template-columns:1fr}}
+/* KaTeX overrides */
+.katex{font-size:1em}
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
+.empty-state .empty-icon{font-size:2rem;margin-bottom:.5rem}
+/* ANSWER INPUT */
+.answer-input{display:flex;gap:.5rem;margin-top:.5rem}
+.answer-input input{max-width:200px}
+</style>
+</head>
+<body>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <span class="nav-brand">SAT Practice</span>
+  <div class="nav-links" id="navLinks">
+    <span class="nav-link active" data-view="home">首页</span>
+    <span class="nav-link" data-view="practice">刷题</span>
+    <span class="nav-link" data-view="exam">模考</span>
+    <span class="nav-link" data-view="wrong">错题<span class="badge" id="reviewBadge" style="display:none">0</span></span>
+    <span class="nav-link" data-view="stats">统计</span>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeToggle">Dark</button>
+    <button class="hamburger" id="hamburger">&#9776;</button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <span class="nav-link active" data-view="home">首页 Home</span>
+  <span class="nav-link" data-view="practice">刷题 Practice</span>
+  <span class="nav-link" data-view="exam">模考 Mock Exam</span>
+  <span class="nav-link" data-view="wrong">错题 Wrong Answers</span>
+  <span class="nav-link" data-view="stats">统计 Statistics</span>
+</div>
+
+<div class="main">
+<!-- HOME VIEW -->
+<div class="view active" id="view-home">
+  <h2 style="margin-bottom:.25rem">Dashboard</h2>
+  <p style="color:var(--text-secondary);margin-bottom:1.5rem">Welcome back. Here's your progress overview.</p>
+  <div class="grid grid-4" id="homeStats">
+    <div class="card" style="text-align:center"><div class="stat-value" id="hTotal">0</div><div class="stat-label">Questions Done</div></div>
+    <div class="card" style="text-align:center"><div class="stat-value" id="hAccuracy">--</div><div class="stat-label">Overall Accuracy</div></div>
+    <div class="card" style="text-align:center"><div class="stat-value" id="hStreak">0</div><div class="stat-label">Today's Questions</div></div>
+    <div class="card" style="text-align:center"><div class="stat-value" id="hReview">0</div><div class="stat-label">Due for Review</div></div>
+  </div>
+  <div class="grid grid-2" style="margin-top:1rem">
+    <div class="card">
+      <div class="card-title">Reading & Writing</div>
+      <div id="homeRWDomains"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Math</div>
+      <div id="homeMathDomains"></div>
+    </div>
+  </div>
+  <div class="grid grid-2" style="margin-top:1rem">
+    <div class="card" style="cursor:pointer" onclick="navigate('practice')">
+      <div class="card-title">Practice Mode</div>
+      <p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:.75rem">Filter by domain, skill, and difficulty. Study at your own pace.</p>
+      <span class="btn btn-primary">Start Practicing</span>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="navigate('exam')">
+      <div class="card-title">Mock Exam</div>
+      <p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:.75rem">Simulate a full SAT with timed modules and score report.</p>
+      <span class="btn btn-primary">Start Exam</span>
+    </div>
+  </div>
+</div>
+
+<!-- PRACTICE VIEW -->
+<div class="view" id="view-practice">
+  <h2 style="margin-bottom:1rem">Practice Mode</h2>
+  <div class="card" id="practiceFilters">
+    <div class="filter-row">
+      <div><label>Test Type</label><select id="fTest"><option value="">All</option><option value="Reading and Writing">Reading & Writing</option><option value="Math">Math</option></select></div>
+      <div><label>Domain</label><select id="fDomain"><option value="">All</option></select></div>
+      <div><label>Skill</label><select id="fSkill"><option value="">All</option></select></div>
+      <div><label>Difficulty</label><select id="fDiff"><option value="">All</option><option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Hard">Hard</option></select></div>
+    </div>
+    <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="startPractice()">Start</button>
+      <button class="btn btn-secondary" onclick="startPractice(true)">Unanswered Only</button>
+      <span style="font-size:.8rem;color:var(--text-muted)" id="filterCount"></span>
+    </div>
+  </div>
+  <div id="practiceArea" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+      <span style="font-size:.875rem;color:var(--text-secondary)" id="practiceProgress"></span>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-secondary btn-sm" onclick="practicePrev()">Prev</button>
+        <button class="btn btn-primary btn-sm" onclick="practiceNext()">Next</button>
+      </div>
+    </div>
+    <div id="practiceContent"></div>
+  </div>
+</div>
+
+<!-- EXAM VIEW -->
+<div class="view" id="view-exam">
+  <div id="examSetup">
+    <h2 style="margin-bottom:1rem">Mock Exam</h2>
+    <div class="card">
+      <div class="card-title">SAT Full-Length Practice Test</div>
+      <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:.9rem">This simulates a real SAT with 4 timed modules. Make sure you have enough time before starting.</p>
+      <div class="grid grid-2" style="margin-bottom:1.5rem">
+        <div style="padding:.75rem;background:var(--bg-secondary);border-radius:var(--radius)">
+          <div style="font-weight:700;margin-bottom:.25rem">RW Module 1</div>
+          <div style="font-size:.8rem;color:var(--text-secondary)">27 questions / 32 min</div>
+        </div>
+        <div style="padding:.75rem;background:var(--bg-secondary);border-radius:var(--radius)">
+          <div style="font-weight:700;margin-bottom:.25rem">RW Module 2</div>
+          <div style="font-size:.8rem;color:var(--text-secondary)">27 questions / 32 min</div>
+        </div>
+        <div style="padding:.75rem;background:var(--bg-secondary);border-radius:var(--radius)">
+          <div style="font-weight:700;margin-bottom:.25rem">Math Module 1</div>
+          <div style="font-size:.8rem;color:var(--text-secondary)">22 questions / 35 min</div>
+        </div>
+        <div style="padding:.75rem;background:var(--bg-secondary);border-radius:var(--radius)">
+          <div style="font-weight:700;margin-bottom:.25rem">Math Module 2</div>
+          <div style="font-size:.8rem;color:var(--text-secondary)">22 questions / 35 min</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startExam()">Begin Exam</button>
+      <span id="examError" style="color:var(--red);font-size:.85rem;margin-left:1rem"></span>
+    </div>
+    <div id="examHistory" style="margin-top:1rem"></div>
+  </div>
+  <div id="examActive" style="display:none">
+    <div class="exam-header">
+      <div>
+        <span style="font-weight:700" id="examModuleLabel">Module 1</span>
+        <span style="font-size:.8rem;color:var(--text-secondary);margin-left:.5rem" id="examModuleInfo"></span>
+      </div>
+      <div class="timer" id="examTimer">32:00</div>
+      <button class="btn btn-danger btn-sm" onclick="submitModule()">Submit Module</button>
+    </div>
+    <div class="exam-body">
+      <div id="examQuestion"></div>
+      <div>
+        <div class="card" style="position:sticky;top:72px">
+          <div style="font-size:.8rem;font-weight:600;margin-bottom:.5rem">Question Navigator</div>
+          <div class="q-nav" id="examNav"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="examReport" style="display:none"></div>
+</div>
+
+<!-- WRONG ANSWERS VIEW -->
+<div class="view" id="view-wrong">
+  <h2 style="margin-bottom:1rem">Wrong Answers</h2>
+  <div class="tabs" id="wrongTabs">
+    <span class="tab active" data-wtab="all">All Wrong</span>
+    <span class="tab" data-wtab="review">Due for Review</span>
+    <span class="tab" data-wtab="scheduled">Scheduled</span>
+  </div>
+  <div id="wrongContent"></div>
+</div>
+
+<!-- STATS VIEW -->
+<div class="view" id="view-stats">
+  <h2 style="margin-bottom:1rem">Statistics</h2>
+  <div class="grid grid-3" id="statsOverview"></div>
+  <div class="grid grid-2" style="margin-top:1rem">
+    <div class="card">
+      <div class="card-title">Accuracy by Domain</div>
+      <div class="bar-chart" id="domainChart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Accuracy by Difficulty</div>
+      <div class="bar-chart" id="diffChart"></div>
+    </div>
+  </div>
+  <div class="grid grid-2" style="margin-top:1rem">
+    <div class="card">
+      <div class="card-title">7-Day Activity</div>
+      <div class="bar-chart" id="activityChart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Weakest Skills</div>
+      <div id="weakSkills"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ========== DATA & STATE ==========
+let questions = [];
+const STORAGE_KEY = 'sat-practice-data';
+
+function loadData() {
+  const d = localStorage.getItem(STORAGE_KEY);
+  if (d) return JSON.parse(d);
+  return { answers: [], reviews: [], settings: {} };
+}
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function getData() { return loadData(); }
+
+// Load questions
+async function loadQuestions() {
+  try {
+    const r = await fetch('questions.json');
+    questions = await r.json();
+    init();
+  } catch(e) {
+    console.error('Failed to load questions.json:', e);
+    questions = [];
+    init();
+  }
+}
+
+// ========== ROUTING ==========
+function navigate(view) {
+  location.hash = '#' + view;
+}
+
+function handleRoute() {
+  const hash = location.hash.slice(1) || 'home';
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + hash);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-link[data-view]').forEach(l => {
+    l.classList.toggle('active', l.dataset.view === hash);
+  });
+  document.getElementById('mobileNav').classList.remove('show');
+  if (hash === 'home') renderHome();
+  else if (hash === 'practice') renderPractice();
+  else if (hash === 'exam') renderExamSetup();
+  else if (hash === 'wrong') renderWrong();
+  else if (hash === 'stats') renderStats();
+}
+
+window.addEventListener('hashchange', handleRoute);
+
+// ========== INIT ==========
+function init() {
+  handleRoute();
+  updateReviewBadge();
+  updateFilterCounts();
+}
+
+// ========== NAV ==========
+document.querySelectorAll('.nav-link[data-view]').forEach(l => {
+  l.addEventListener('click', () => navigate(l.dataset.view));
+});
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobileNav').classList.toggle('show');
+});
+
+// Theme
+const themeBtn = document.getElementById('themeToggle');
+function setTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  themeBtn.textContent = dark ? 'Light' : 'Dark';
+  localStorage.setItem('sat-theme', dark ? 'dark' : 'light');
+}
+themeBtn.addEventListener('click', () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  setTheme(!isDark);
+});
+if (localStorage.getItem('sat-theme') === 'dark') setTheme(true);
+
+// ========== KATEX RENDER ==========
+function renderMath(el) {
+  if (!el) return;
+  renderMathInElement(el, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false},
+      {left: '\\(', right: '\\)', display: false},
+      {left: '\\[', right: '\\]', display: true}
+    ],
+    throwOnError: false
+  });
+}
+
+// ========== HELPERS ==========
+function getAnswerMap() {
+  const data = getData();
+  const map = {};
+  data.answers.forEach(a => { map[a.qid] = a; });
+  return map;
+}
+
+function getLastAnswer(qid) {
+  const data = getData();
+  for (let i = data.answers.length - 1; i >= 0; i--) {
+    if (data.answers[i].qid === qid) return data.answers[i];
+  }
+  return null;
+}
+
+function recordAnswer(qid, answer, correct) {
+  const data = getData();
+  data.answers.push({ qid, answer, correct, timestamp: Date.now() });
+  if (!correct) {
+    const existing = data.reviews.find(r => r.qid === qid);
+    if (!existing) {
+      data.reviews.push({ qid, nextReview: Date.now() + 86400000, interval: 1 });
+    }
+  }
+  saveData(data);
+  updateReviewBadge();
+}
+
+function getDueReviews() {
+  const data = getData();
+  const now = Date.now();
+  return data.reviews.filter(r => r.nextReview <= now);
+}
+
+function updateReviewBadge() {
+  const due = getDueReviews().length;
+  const badge = document.getElementById('reviewBadge');
+  if (due > 0) { badge.style.display = ''; badge.textContent = due; }
+  else { badge.style.display = 'none'; }
+}
+
+function uniqueValues(arr, key) {
+  return [...new Set(arr.map(q => q[key]).filter(Boolean))].sort();
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+// ========== FILTER LOGIC ==========
+const fTest = document.getElementById('fTest');
+const fDomain = document.getElementById('fDomain');
+const fSkill = document.getElementById('fSkill');
+const fDiff = document.getElementById('fDiff');
+
+function updateFilterCounts() {
+  const filtered = getFilteredQuestions();
+  document.getElementById('filterCount').textContent = filtered.length + ' questions available';
+}
+
+function getFilteredQuestions() {
+  let qs = [...questions];
+  if (fTest.value) qs = qs.filter(q => q.test === fTest.value);
+  if (fDomain.value) qs = qs.filter(q => q.domain === fDomain.value);
+  if (fSkill.value) qs = qs.filter(q => q.skill === fSkill.value);
+  if (fDiff.value) qs = qs.filter(q => q.difficulty === fDiff.value);
+  return qs;
+}
+
+function populateDomains() {
+  const qs = fTest.value ? questions.filter(q => q.test === fTest.value) : questions;
+  const domains = uniqueValues(qs, 'domain');
+  fDomain.innerHTML = '<option value="">All</option>' + domains.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+  populateSkills();
+}
+
+function populateSkills() {
+  let qs = fTest.value ? questions.filter(q => q.test === fTest.value) : [...questions];
+  if (fDomain.value) qs = qs.filter(q => q.domain === fDomain.value);
+  const skills = uniqueValues(qs, 'skill');
+  fSkill.innerHTML = '<option value="">All</option>' + skills.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  updateFilterCounts();
+}
+
+fTest.addEventListener('change', () => { populateDomains(); });
+fDomain.addEventListener('change', () => { populateSkills(); });
+fSkill.addEventListener('change', updateFilterCounts);
+fDiff.addEventListener('change', updateFilterCounts);
+
+// ========== HOME VIEW ==========
+function renderHome() {
+  const data = getData();
+  const ans = data.answers;
+  const uniqueQids = [...new Set(ans.map(a => a.qid))];
+  // For accuracy, use last attempt per question
+  const lastAttempts = {};
+  ans.forEach(a => { lastAttempts[a.qid] = a; });
+  const lastArr = Object.values(lastAttempts);
+  const correct = lastArr.filter(a => a.correct).length;
+  const total = lastArr.length;
+  const acc = total ? Math.round(correct / total * 100) + '%' : '--';
+  const today = new Date().toDateString();
+  const todayCount = ans.filter(a => new Date(a.timestamp).toDateString() === today).length;
+  const dueCount = getDueReviews().length;
+
+  document.getElementById('hTotal').textContent = total;
+  document.getElementById('hAccuracy').textContent = acc;
+  document.getElementById('hStreak').textContent = todayCount;
+  document.getElementById('hReview').textContent = dueCount;
+
+  // Domain breakdowns
+  const rwDomains = uniqueValues(questions.filter(q => q.test === 'Reading and Writing'), 'domain');
+  const mathDomains = uniqueValues(questions.filter(q => q.test === 'Math'), 'domain');
+
+  function domainHTML(domains, test) {
+    if (!domains.length) return '<p style="color:var(--text-muted);font-size:.85rem">No data yet</p>';
+    return domains.map(d => {
+      const dqs = questions.filter(q => q.domain === d && q.test === test);
+      const dAns = dqs.map(q => lastAttempts[q.question_id]).filter(Boolean);
+      const dCorrect = dAns.filter(a => a.correct).length;
+      const dTotal = dAns.length;
+      const pct = dTotal ? Math.round(dCorrect / dTotal * 100) : 0;
+      return `<div style="margin-bottom:.75rem">
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.25rem">
+          <span>${escapeHtml(d)}</span><span>${dTotal ? pct + '%' : '--'} (${dTotal}/${dqs.length})</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${dTotal ? pct : 0}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('homeRWDomains').innerHTML = domainHTML(rwDomains, 'Reading and Writing');
+  document.getElementById('homeMathDomains').innerHTML = domainHTML(mathDomains, 'Math');
+}
+
+// ========== PRACTICE MODE ==========
+let practiceQuestions = [];
+let practiceIndex = 0;
+let practiceAnswered = {};
+
+function renderPractice() {
+  populateDomains();
+}
+
+function startPractice(unansweredOnly) {
+  let qs = getFilteredQuestions();
+  if (unansweredOnly) {
+    const data = getData();
+    const answered = new Set(data.answers.map(a => a.qid));
+    qs = qs.filter(q => !answered.has(q.question_id));
+  }
+  if (!qs.length) { alert('No questions match these filters.'); return; }
+  practiceQuestions = qs;
+  practiceIndex = 0;
+  practiceAnswered = {};
+  document.getElementById('practiceArea').style.display = '';
+  document.getElementById('practiceFilters').style.display = 'none';
+  renderPracticeQuestion();
+}
+
+function renderPracticeQuestion() {
+  if (!practiceQuestions.length) return;
+  const q = practiceQuestions[practiceIndex];
+  document.getElementById('practiceProgress').textContent = `Question ${practiceIndex + 1} of ${practiceQuestions.length} | ${q.difficulty || ''} | ${q.domain || ''}`;
+  const answered = practiceAnswered[q.question_id];
+  const prevAnswer = answered || null;
+
+  let html = '';
+  if (q.passage) {
+    html += `<div class="passage-box">${escapeHtml(q.passage)}</div>`;
+  }
+  html += `<div class="card"><div style="margin-bottom:1rem;font-size:.95rem;line-height:1.7" class="stem-text">${escapeHtml(q.stem)}</div>`;
+
+  if (q.options) {
+    const letters = Object.keys(q.options).sort();
+    letters.forEach(letter => {
+      let cls = 'option-btn';
+      if (prevAnswer) {
+        cls += ' disabled';
+        if (letter === q.answer) cls += ' correct';
+        if (letter === prevAnswer.answer && !prevAnswer.correct) cls += ' wrong';
+      }
+      html += `<button class="${cls}" ${prevAnswer ? '' : `onclick="practiceAnswer('${letter}')"`}>
+        <span class="opt-letter">${letter}</span>
+        <span class="opt-text">${escapeHtml(q.options[letter])}</span>
+      </button>`;
+    });
+  } else {
+    if (prevAnswer) {
+      html += `<div style="margin:.5rem 0">Your answer: <strong>${escapeHtml(prevAnswer.answer)}</strong> ${prevAnswer.correct ? '<span style="color:var(--green)">&#10003; Correct</span>' : '<span style="color:var(--red)">&#10007; Wrong</span> (Answer: ' + escapeHtml(q.answer) + ')'}</div>`;
+    } else {
+      html += `<div class="answer-input"><input type="text" id="freeInput" placeholder="Type your answer..."><button class="btn btn-primary btn-sm" onclick="practiceAnswerFree()">Submit</button></div>`;
+    }
+  }
+
+  if (prevAnswer && q.explanation) {
+    html += `<div style="margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius);font-size:.875rem;line-height:1.7">
+      <div style="font-weight:700;margin-bottom:.25rem">Explanation</div>
+      <div class="explanation-text">${escapeHtml(q.explanation)}</div>
+    </div>`;
+  }
+  html += '</div>';
+
+  document.getElementById('practiceContent').innerHTML = html;
+  renderMath(document.getElementById('practiceContent'));
+}
+
+function practiceAnswer(letter) {
+  const q = practiceQuestions[practiceIndex];
+  if (practiceAnswered[q.question_id]) return;
+  const correct = letter === q.answer;
+  practiceAnswered[q.question_id] = { answer: letter, correct };
+  recordAnswer(q.question_id, letter, correct);
+  renderPracticeQuestion();
+}
+
+function practiceAnswerFree() {
+  const input = document.getElementById('freeInput');
+  if (!input || !input.value.trim()) return;
+  const q = practiceQuestions[practiceIndex];
+  const val = input.value.trim();
+  const correct = val.toLowerCase() === String(q.answer).toLowerCase();
+  practiceAnswered[q.question_id] = { answer: val, correct };
+  recordAnswer(q.question_id, val, correct);
+  renderPracticeQuestion();
+}
+
+function practiceNext() {
+  if (practiceIndex < practiceQuestions.length - 1) { practiceIndex++; renderPracticeQuestion(); }
+  else {
+    document.getElementById('practiceArea').style.display = 'none';
+    document.getElementById('practiceFilters').style.display = '';
+    updateFilterCounts();
+  }
+}
+function practicePrev() {
+  if (practiceIndex > 0) { practiceIndex--; renderPracticeQuestion(); }
+}
+
+// ========== EXAM MODE ==========
+const EXAM_MODULES = [
+  { name: 'RW Module 1', test: 'Reading and Writing', count: 27, time: 32 },
+  { name: 'RW Module 2', test: 'Reading and Writing', count: 27, time: 32 },
+  { name: 'Math Module 1', test: 'Math', count: 22, time: 35 },
+  { name: 'Math Module 2', test: 'Math', count: 22, time: 35 },
+];
+
+let examState = null;
+let examTimer = null;
+
+function renderExamSetup() {
+  document.getElementById('examSetup').style.display = '';
+  document.getElementById('examActive').style.display = 'none';
+  document.getElementById('examReport').style.display = 'none';
+  renderExamHistory();
+}
+
+function renderExamHistory() {
+  const data = getData();
+  const exams = data.exams || [];
+  if (!exams.length) { document.getElementById('examHistory').innerHTML = ''; return; }
+  let html = '<div class="card"><div class="card-title">Past Exams</div>';
+  exams.slice(-5).reverse().forEach((ex, i) => {
+    const d = new Date(ex.timestamp);
+    html += `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.875rem">
+      <span>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</span>
+      <span>RW: ${ex.rwCorrect}/${ex.rwTotal} | Math: ${ex.mathCorrect}/${ex.mathTotal}</span>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('examHistory').innerHTML = html;
+}
+
+function startExam() {
+  const rwQs = questions.filter(q => q.test === 'Reading and Writing');
+  const mathQs = questions.filter(q => q.test === 'Math');
+  if (rwQs.length < 54 || mathQs.length < 44) {
+    // Use what we have
+    if (rwQs.length < 1 && mathQs.length < 1) {
+      document.getElementById('examError').textContent = 'Not enough questions loaded.';
+      return;
+    }
+  }
+  document.getElementById('examError').textContent = '';
+
+  function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  const sRW = shuffle(rwQs);
+  const sMath = shuffle(mathQs);
+
+  const modules = [
+    { ...EXAM_MODULES[0], questions: sRW.slice(0, Math.min(27, sRW.length)) },
+    { ...EXAM_MODULES[1], questions: sRW.slice(27, Math.min(54, sRW.length)) },
+    { ...EXAM_MODULES[2], questions: sMath.slice(0, Math.min(22, sMath.length)) },
+    { ...EXAM_MODULES[3], questions: sMath.slice(22, Math.min(44, sMath.length)) },
+  ];
+
+  examState = {
+    modules,
+    currentModule: 0,
+    currentQ: 0,
+    answers: {},
+    startTime: Date.now(),
+    timeLeft: modules[0].time * 60
+  };
+
+  document.getElementById('examSetup').style.display = 'none';
+  document.getElementById('examActive').style.display = '';
+  startExamTimer();
+  renderExamModule();
+}
+
+function startExamTimer() {
+  clearInterval(examTimer);
+  examTimer = setInterval(() => {
+    if (!examState) { clearInterval(examTimer); return; }
+    examState.timeLeft--;
+    const min = Math.floor(examState.timeLeft / 60);
+    const sec = examState.timeLeft % 60;
+    const timerEl = document.getElementById('examTimer');
+    timerEl.textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+    timerEl.classList.toggle('warning', examState.timeLeft < 120);
+    if (examState.timeLeft <= 0) submitModule();
+  }, 1000);
+}
+
+function renderExamModule() {
+  const mod = examState.modules[examState.currentModule];
+  document.getElementById('examModuleLabel').textContent = mod.name;
+  document.getElementById('examModuleInfo').textContent = `${mod.questions.length} questions`;
+
+  // Nav
+  let navHtml = '';
+  mod.questions.forEach((q, i) => {
+    const key = q.question_id;
+    const answered = examState.answers[key] !== undefined;
+    const current = i === examState.currentQ;
+    navHtml += `<button class="q-nav-btn${answered ? ' answered' : ''}${current ? ' current' : ''}" onclick="examGoTo(${i})">${i + 1}</button>`;
+  });
+  document.getElementById('examNav').innerHTML = navHtml;
+  renderExamQuestion();
+}
+
+function renderExamQuestion() {
+  const mod = examState.modules[examState.currentModule];
+  const q = mod.questions[examState.currentQ];
+  if (!q) { document.getElementById('examQuestion').innerHTML = '<div class="empty-state">No questions in this module.</div>'; return; }
+  const key = q.question_id;
+  const selected = examState.answers[key];
+
+  let html = '';
+  html += `<div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Question ${examState.currentQ + 1} of ${mod.questions.length} | ${q.difficulty || ''}</div>`;
+  if (q.passage) {
+    html += `<div class="passage-box">${escapeHtml(q.passage)}</div>`;
+  }
+  html += `<div class="card"><div style="margin-bottom:1rem;font-size:.95rem;line-height:1.7" class="stem-text">${escapeHtml(q.stem)}</div>`;
+
+  if (q.options) {
+    Object.keys(q.options).sort().forEach(letter => {
+      const sel = selected === letter ? ' selected' : '';
+      html += `<button class="option-btn${sel}" onclick="examSelectAnswer('${letter}')">
+        <span class="opt-letter">${letter}</span>
+        <span class="opt-text">${escapeHtml(q.options[letter])}</span>
+      </button>`;
+    });
+  } else {
+    html += `<div class="answer-input"><input type="text" id="examFreeInput" value="${selected || ''}" placeholder="Type your answer..." onchange="examSelectAnswer(this.value)"><button class="btn btn-primary btn-sm" onclick="examSelectAnswer(document.getElementById('examFreeInput').value)">Save</button></div>`;
+  }
+  html += '</div>';
+  html += `<div style="display:flex;justify-content:space-between;margin-top:1rem">
+    <button class="btn btn-secondary" ${examState.currentQ === 0 ? 'disabled' : ''} onclick="examPrev()">Previous</button>
+    <button class="btn btn-primary" onclick="examNext()">${examState.currentQ === mod.questions.length - 1 ? 'Review' : 'Next'}</button>
+  </div>`;
+
+  document.getElementById('examQuestion').innerHTML = html;
+  renderMath(document.getElementById('examQuestion'));
+
+  // Update nav current
+  document.querySelectorAll('#examNav .q-nav-btn').forEach((btn, i) => {
+    btn.classList.toggle('current', i === examState.currentQ);
+  });
+}
+
+function examSelectAnswer(answer) {
+  const mod = examState.modules[examState.currentModule];
+  const q = mod.questions[examState.currentQ];
+  examState.answers[q.question_id] = answer;
+  // Update nav
+  const navBtns = document.querySelectorAll('#examNav .q-nav-btn');
+  if (navBtns[examState.currentQ]) navBtns[examState.currentQ].classList.add('answered');
+  renderExamQuestion();
+}
+
+function examGoTo(i) { examState.currentQ = i; renderExamQuestion(); }
+function examNext() {
+  const mod = examState.modules[examState.currentModule];
+  if (examState.currentQ < mod.questions.length - 1) { examState.currentQ++; renderExamQuestion(); }
+}
+function examPrev() {
+  if (examState.currentQ > 0) { examState.currentQ--; renderExamQuestion(); }
+}
+
+function submitModule() {
+  clearInterval(examTimer);
+  const mod = examState.modules[examState.currentModule];
+
+  // Record answers
+  mod.questions.forEach(q => {
+    const ans = examState.answers[q.question_id];
+    if (ans !== undefined) {
+      const correct = String(ans).toLowerCase() === String(q.answer).toLowerCase();
+      recordAnswer(q.question_id, ans, correct);
+    }
+  });
+
+  if (examState.currentModule < 3) {
+    examState.currentModule++;
+    examState.currentQ = 0;
+    const nextMod = examState.modules[examState.currentModule];
+    examState.timeLeft = nextMod.time * 60;
+    startExamTimer();
+    renderExamModule();
+  } else {
+    showExamReport();
+  }
+}
+
+function showExamReport() {
+  clearInterval(examTimer);
+  document.getElementById('examActive').style.display = 'none';
+  document.getElementById('examReport').style.display = '';
+
+  let rwCorrect = 0, rwTotal = 0, mathCorrect = 0, mathTotal = 0;
+  let moduleResults = [];
+
+  examState.modules.forEach(mod => {
+    let mc = 0, mt = mod.questions.length;
+    mod.questions.forEach(q => {
+      const ans = examState.answers[q.question_id];
+      if (ans !== undefined && String(ans).toLowerCase() === String(q.answer).toLowerCase()) mc++;
+    });
+    if (mod.test === 'Reading and Writing') { rwCorrect += mc; rwTotal += mt; }
+    else { mathCorrect += mc; mathTotal += mt; }
+    moduleResults.push({ name: mod.name, correct: mc, total: mt });
+  });
+
+  // Approximate SAT score (200-800 per section)
+  const rwPct = rwTotal ? rwCorrect / rwTotal : 0;
+  const mathPct = mathTotal ? mathCorrect / mathTotal : 0;
+  const rwScore = Math.round(200 + rwPct * 600);
+  const mathScore = Math.round(200 + mathPct * 600);
+  const totalScore = rwScore + mathScore;
+
+  // Save exam record
+  const data = getData();
+  if (!data.exams) data.exams = [];
+  data.exams.push({ timestamp: Date.now(), rwCorrect, rwTotal, mathCorrect, mathTotal, rwScore, mathScore });
+  saveData(data);
+
+  let html = '<div class="card" style="text-align:center"><div class="card-title">Exam Complete</div>';
+  html += `<div class="score-circle"><span class="score-num">${totalScore}</span><span class="score-label">/ 1600</span></div>`;
+  html += `<div class="grid grid-2" style="max-width:400px;margin:1rem auto">
+    <div><div class="stat-value">${rwScore}</div><div class="stat-label">Reading & Writing</div><div style="font-size:.8rem;color:var(--text-muted)">${rwCorrect}/${rwTotal} correct</div></div>
+    <div><div class="stat-value">${mathScore}</div><div class="stat-label">Math</div><div style="font-size:.8rem;color:var(--text-muted)">${mathCorrect}/${mathTotal} correct</div></div>
+  </div>`;
+
+  html += '<div style="text-align:left;margin-top:1.5rem">';
+  moduleResults.forEach(mr => {
+    const pct = mr.total ? Math.round(mr.correct / mr.total * 100) : 0;
+    html += `<div style="margin-bottom:.75rem">
+      <div style="display:flex;justify-content:space-between;font-size:.875rem;margin-bottom:.25rem"><span>${mr.name}</span><span>${mr.correct}/${mr.total} (${pct}%)</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  html += '</div>';
+  html += `<button class="btn btn-primary" style="margin-top:1.5rem" onclick="renderExamSetup()">Back to Exam Setup</button>`;
+  html += '</div>';
+
+  document.getElementById('examReport').innerHTML = html;
+  renderMath(document.getElementById('examReport'));
+}
+
+// ========== WRONG ANSWERS ==========
+let wrongTab = 'all';
+
+function renderWrong() {
+  document.querySelectorAll('#wrongTabs .tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.wtab === wrongTab);
+    t.onclick = () => { wrongTab = t.dataset.wtab; renderWrong(); };
+  });
+
+  const data = getData();
+  const lastAttempts = {};
+  data.answers.forEach(a => { lastAttempts[a.qid] = a; });
+  const wrongQids = Object.keys(lastAttempts).filter(qid => !lastAttempts[qid].correct);
+  const now = Date.now();
+
+  let displayQids = [];
+  if (wrongTab === 'all') {
+    displayQids = wrongQids;
+  } else if (wrongTab === 'review') {
+    const dueQids = new Set(data.reviews.filter(r => r.nextReview <= now).map(r => r.qid));
+    displayQids = wrongQids.filter(qid => dueQids.has(qid));
+  } else {
+    const scheduledQids = new Set(data.reviews.filter(r => r.nextReview > now).map(r => r.qid));
+    displayQids = wrongQids.filter(qid => scheduledQids.has(qid));
+  }
+
+  if (!displayQids.length) {
+    document.getElementById('wrongContent').innerHTML = '<div class="empty-state"><div class="empty-icon">--</div><p>No wrong answers in this category.</p></div>';
+    return;
+  }
+
+  // Group by domain
+  const groups = {};
+  displayQids.forEach(qid => {
+    const q = questions.find(qq => qq.question_id === qid);
+    if (!q) return;
+    const key = q.domain || 'Unknown';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(q);
+  });
+
+  let html = '';
+  Object.keys(groups).sort().forEach(domain => {
+    html += `<div style="margin-bottom:1.5rem"><h3 style="font-size:.95rem;margin-bottom:.5rem;color:var(--text-secondary)">${escapeHtml(domain)}</h3>`;
+    groups[domain].forEach(q => {
+      const la = lastAttempts[q.question_id];
+      const review = data.reviews.find(r => r.qid === q.question_id);
+      const reviewInfo = review ? (review.nextReview <= now ? '<span style="color:var(--red);font-weight:600">Due now</span>' : `Next: ${new Date(review.nextReview).toLocaleDateString()}`) : '';
+      html += `<div class="wrong-item">
+        <div class="q-meta">${escapeHtml(q.skill || '')} | ${q.difficulty || ''} | Your: ${escapeHtml(la.answer)} | Correct: ${escapeHtml(q.answer)} | ${reviewInfo}</div>
+        <div style="font-size:.875rem;line-height:1.6" class="stem-text">${escapeHtml(q.stem).substring(0, 200)}${q.stem && q.stem.length > 200 ? '...' : ''}</div>
+        <div class="review-btns">
+          <button class="btn btn-secondary btn-sm" onclick="scheduleReview('${q.question_id}',1)">1 day</button>
+          <button class="btn btn-secondary btn-sm" onclick="scheduleReview('${q.question_id}',3)">3 days</button>
+          <button class="btn btn-secondary btn-sm" onclick="scheduleReview('${q.question_id}',7)">7 days</button>
+          <button class="btn btn-secondary btn-sm" onclick="scheduleReview('${q.question_id}',14)">14 days</button>
+          <button class="btn btn-primary btn-sm" onclick="reviewNow('${q.question_id}')">Review Now</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('wrongContent').innerHTML = html;
+  renderMath(document.getElementById('wrongContent'));
+}
+
+function scheduleReview(qid, days) {
+  const data = getData();
+  let review = data.reviews.find(r => r.qid === qid);
+  if (review) {
+    review.nextReview = Date.now() + days * 86400000;
+    review.interval = days;
+  } else {
+    data.reviews.push({ qid, nextReview: Date.now() + days * 86400000, interval: days });
+  }
+  saveData(data);
+  updateReviewBadge();
+  renderWrong();
+}
+
+function reviewNow(qid) {
+  const q = questions.find(qq => qq.question_id === qid);
+  if (!q) return;
+  navigate('practice');
+  setTimeout(() => {
+    practiceQuestions = [q];
+    practiceIndex = 0;
+    practiceAnswered = {};
+    document.getElementById('practiceArea').style.display = '';
+    document.getElementById('practiceFilters').style.display = 'none';
+    renderPracticeQuestion();
+  }, 100);
+}
+
+// ========== STATISTICS ==========
+function renderStats() {
+  const data = getData();
+  const lastAttempts = {};
+  data.answers.forEach(a => { lastAttempts[a.qid] = a; });
+  const lastArr = Object.values(lastAttempts);
+  const correct = lastArr.filter(a => a.correct).length;
+  const total = lastArr.length;
+  const acc = total ? Math.round(correct / total * 100) : 0;
+  const totalQs = questions.length;
+
+  document.getElementById('statsOverview').innerHTML = `
+    <div class="card" style="text-align:center"><div class="stat-value">${acc}%</div><div class="stat-label">Overall Accuracy</div></div>
+    <div class="card" style="text-align:center"><div class="stat-value">${total}</div><div class="stat-label">Questions Attempted</div></div>
+    <div class="card" style="text-align:center"><div class="stat-value">${totalQs ? Math.round(total / totalQs * 100) : 0}%</div><div class="stat-label">Bank Coverage</div></div>
+  `;
+
+  // Domain chart
+  const domains = uniqueValues(questions, 'domain');
+  let domainHtml = '';
+  const domainData = domains.map(d => {
+    const dqs = questions.filter(q => q.domain === d);
+    const dAns = dqs.map(q => lastAttempts[q.question_id]).filter(Boolean);
+    const dc = dAns.filter(a => a.correct).length;
+    const dt = dAns.length;
+    return { name: d, pct: dt ? Math.round(dc / dt * 100) : 0, total: dt };
+  }).filter(d => d.total > 0);
+
+  const maxDomain = Math.max(...domainData.map(d => d.pct), 1);
+  domainData.forEach(d => {
+    const h = Math.max((d.pct / 100) * 100, 2);
+    domainHtml += `<div class="bar-col"><span class="bar-value">${d.pct}%</span><div class="bar" style="height:${h}%"></div><span class="bar-label">${d.name.split(':')[0] || d.name.substring(0, 12)}</span></div>`;
+  });
+  document.getElementById('domainChart').innerHTML = domainHtml || '<div class="empty-state">No data yet</div>';
+
+  // Difficulty chart
+  const diffs = ['Easy', 'Medium', 'Hard'];
+  let diffHtml = '';
+  diffs.forEach(diff => {
+    const dqs = questions.filter(q => q.difficulty === diff);
+    const dAns = dqs.map(q => lastAttempts[q.question_id]).filter(Boolean);
+    const dc = dAns.filter(a => a.correct).length;
+    const dt = dAns.length;
+    const pct = dt ? Math.round(dc / dt * 100) : 0;
+    const h = dt ? Math.max((pct / 100) * 100, 2) : 0;
+    diffHtml += `<div class="bar-col"><span class="bar-value">${dt ? pct + '%' : '--'}</span><div class="bar" style="height:${h}%"></div><span class="bar-label">${diff}</span></div>`;
+  });
+  document.getElementById('diffChart').innerHTML = diffHtml;
+
+  // 7-day activity
+  let actHtml = '';
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const day = new Date(now);
+    day.setDate(day.getDate() - i);
+    const dayStr = day.toDateString();
+    const count = data.answers.filter(a => new Date(a.timestamp).toDateString() === dayStr).length;
+    const maxAct = Math.max(...Array.from({length:7}, (_, j) => {
+      const dd = new Date(now); dd.setDate(dd.getDate() - (6 - j));
+      return data.answers.filter(a => new Date(a.timestamp).toDateString() === dd.toDateString()).length;
+    }), 1);
+    const h = Math.max((count / maxAct) * 100, count > 0 ? 5 : 0);
+    const label = `${day.getMonth()+1}/${day.getDate()}`;
+    actHtml += `<div class="bar-col"><span class="bar-value">${count}</span><div class="bar" style="height:${h}%"></div><span class="bar-label">${label}</span></div>`;
+  }
+  document.getElementById('activityChart').innerHTML = actHtml;
+
+  // Weakest skills
+  const skills = uniqueValues(questions, 'skill');
+  const skillData = skills.map(s => {
+    const sqs = questions.filter(q => q.skill === s);
+    const sAns = sqs.map(q => lastAttempts[q.question_id]).filter(Boolean);
+    const sc = sAns.filter(a => a.correct).length;
+    const st = sAns.length;
+    return { name: s, pct: st ? Math.round(sc / st * 100) : -1, total: st };
+  }).filter(s => s.total >= 2).sort((a, b) => a.pct - b.pct).slice(0, 5);
+
+  if (!skillData.length) {
+    document.getElementById('weakSkills').innerHTML = '<div class="empty-state">Answer more questions to see weak areas.</div>';
+  } else {
+    let skillHtml = '';
+    skillData.forEach(s => {
+      skillHtml += `<div style="margin-bottom:.75rem">
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.25rem"><span>${escapeHtml(s.name)}</span><span>${s.pct}% (n=${s.total})</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${s.pct}%;background:${s.pct < 50 ? 'var(--red)' : 'var(--primary)'}"></div></div>
+      </div>`;
+    });
+    document.getElementById('weakSkills').innerHTML = skillHtml;
+  }
+}
+
+// ========== BOOT ==========
+loadQuestions();
+</script>
+</body>
+</html>
