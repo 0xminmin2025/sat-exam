@@ -153,9 +153,30 @@ label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;
 /* ANSWER INPUT */
 .answer-input{display:flex;gap:.5rem;margin-top:.5rem}
 .answer-input input{max-width:200px}
+/* LOGIN */
+.login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-overlay.hidden{display:none}
+.login-box{text-align:center;max-width:360px;width:90%;padding:2.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md)}
+.login-box h1{font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:.25rem;letter-spacing:-.03em}
+.login-box p{font-size:.875rem;color:var(--text-secondary);margin-bottom:1.5rem}
+.login-box input{padding:.75rem 1rem;border:2px solid var(--border);border-radius:var(--radius);font-size:1rem;width:100%;text-align:center;letter-spacing:.05em;transition:var(--transition)}
+.login-box input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,41,59,.1)}
+.login-box .login-btn{margin-top:1rem;width:100%;padding:.75rem;font-size:1rem}
+.login-box .login-error{color:var(--red);font-size:.8rem;margin-top:.75rem;display:none}
+.user-name{font-size:.8rem;color:rgba(255,255,255,.7);font-weight:500}
 </style>
 </head>
 <body>
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h1>SAT Practice</h1>
+    <p>Enter your password to continue</p>
+    <input type="password" id="loginInput" placeholder="Password" autocomplete="off">
+    <button class="btn btn-primary login-btn" onclick="attemptLogin()">Enter</button>
+    <div class="login-error" id="loginError">Incorrect password</div>
+  </div>
+</div>
 <!-- NAVBAR -->
 <nav class="navbar">
   <span class="nav-brand">SAT Practice</span>
@@ -167,6 +188,7 @@ label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;
     <span class="nav-link" data-view="stats">统计</span>
   </div>
   <div class="nav-right">
+    <span class="user-name" id="userName"></span>
     <button class="theme-toggle" id="themeToggle">Dark</button>
     <button class="hamburger" id="hamburger">&#9776;</button>
   </div>
@@ -333,6 +355,37 @@ label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;
 </div>
 
 <script>
+// ========== AUTH ==========
+const AUTH_KEY = 'sat-practice-auth';
+const PASS_HASH = '7c9ce7f4'; // simple hash of 'payson'
+function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return(h>>>0).toString(16).slice(0,8)}
+function checkAuth(){
+  const saved=localStorage.getItem(AUTH_KEY);
+  if(saved===PASS_HASH){
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('userName').textContent='Payson';
+    return true;
+  }
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('loginInput').addEventListener('keydown',e=>{if(e.key==='Enter')attemptLogin()});
+  document.getElementById('loginInput').focus();
+  return false;
+}
+function attemptLogin(){
+  const input=document.getElementById('loginInput').value.trim().toLowerCase();
+  if(input==='payson'){
+    localStorage.setItem(AUTH_KEY,PASS_HASH);
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('userName').textContent='Payson';
+    document.getElementById('loginError').style.display='none';
+    loadQuestions();
+  }else{
+    document.getElementById('loginError').style.display='block';
+    document.getElementById('loginInput').value='';
+    document.getElementById('loginInput').focus();
+  }
+}
+
 // ========== DATA & STATE ==========
 let questions = [];
 const STORAGE_KEY = 'sat-practice-data';
@@ -1095,7 +1148,7 @@ function renderStats() {
 }
 
 // ========== BOOT ==========
-loadQuestions();
+if(checkAuth()) loadQuestions();
 </script>
 </body>
 </html>
