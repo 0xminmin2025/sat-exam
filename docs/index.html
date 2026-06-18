@@ -152,6 +152,9 @@ img,table,pre{max-width:100%;overflow-x:auto}
 /* EMPTY STATE */
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
 .empty-state .empty-icon{font-size:2rem;margin-bottom:.5rem}
+/* FIGURE WARNING */
+.figure-warning{padding:.75rem 1rem;background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--radius);margin-bottom:1rem;font-size:.85rem;color:#92400e;display:flex;align-items:center;gap:.5rem}
+[data-theme="dark"] .figure-warning{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:#fbbf24}
 /* ANSWER INPUT */
 .answer-input{display:flex;gap:.5rem;margin-top:.5rem}
 .answer-input input{max-width:200px}
@@ -718,7 +721,7 @@ function renderPracticeQuestion() {
   let html = '';
   // Missing figure warning
   if (needsFigure(q)) {
-    html += `<div style="padding:.75rem 1rem;background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--radius);margin-bottom:1rem;font-size:.85rem;color:#92400e;display:flex;align-items:center;gap:.5rem"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available. Answer may require visual information.</div>`;
+    html += `<div class="figure-warning"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available. Answer may require visual information.</div>`;
   }
   if (q.passage) {
     html += `<div class="passage-box">${formatPassage(q.passage)}</div>`;
@@ -906,7 +909,7 @@ function renderExamQuestion() {
   let html = '';
   html += `<div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Question ${examState.currentQ + 1} of ${mod.questions.length} | ${q.difficulty || ''}</div>`;
   if (needsFigure(q)) {
-    html += `<div style="padding:.75rem 1rem;background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--radius);margin-bottom:1rem;font-size:.85rem;color:#92400e;display:flex;align-items:center;gap:.5rem"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available.</div>`;
+    html += `<div class="figure-warning"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available.</div>`;
   }
   if (q.passage) {
     html += `<div class="passage-box">${formatPassage(q.passage)}</div>`;
