@@ -402,7 +402,7 @@ function getData() { return loadData(); }
 
 // CDN加速 + GitHub Pages回退
 const CDN_BASE = 'https://cdn.jsdelivr.net/gh/0xminmin2025/sat-exam@main/docs/';
-const DATA_VER = '20260504';
+const DATA_VER = '20260618';
 
 async function fetchJSON(filename, retries) {
   retries = retries || 2;
@@ -565,6 +565,38 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
+// Format passage text: escape HTML, preserve newlines, style Text 1/Text 2 headers
+function formatPassage(text) {
+  if (!text) return '';
+  let html = escapeHtml(text);
+  // Style "Text 1" / "Text 2" labels as bold headers with separator
+  html = html.replace(/\n?(Text\s+[12])\n/g, '<div style="margin:1rem 0 .5rem;padding-top:.75rem;border-top:2px solid var(--border);font-weight:700;font-size:.95rem;color:var(--primary)">$1</div>');
+  // First "Text 1" at start shouldn't have top border
+  html = html.replace(/<div style="margin:1rem 0 .5rem;padding-top:.75rem;border-top:2px solid var\(--border\);font-weight:700;font-size:\.95rem;color:var\(--primary\)">Text 1<\/div>/, '<div style="margin:0 0 .5rem;font-weight:700;font-size:.95rem;color:var(--primary)">Text 1</div>');
+  // Convert remaining newlines to <br>
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+// Format stem/explanation: escape HTML, preserve newlines
+function formatText(text) {
+  if (!text) return '';
+  let html = escapeHtml(text);
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+// Detect if question references a figure/graph/table that's missing
+function needsFigure(q) {
+  const text = ((q.stem || '') + ' ' + (q.passage || '')).toLowerCase();
+  const markers = ['figure shown','figure above','figure below','graph shown','graph above',
+    'the scatterplot','the diagram','shown above','shown below','the histogram',
+    'the bar graph','the line graph','the dot plot','the box plot','the circle graph',
+    'the table shown','table above','the graph below'];
+  if (q.test === 'Reading and Writing') return false;
+  return markers.some(m => text.includes(m));
+}
+
 // ========== FILTER LOGIC ==========
 const fTest = document.getElementById('fTest');
 const fDomain = document.getElementById('fDomain');
@@ -684,14 +716,20 @@ function renderPracticeQuestion() {
   const prevAnswer = answered || null;
 
   let html = '';
-  if (q.passage) {
-    html += `<div class="passage-box">${escapeHtml(q.passage)}</div>`;
+  // Missing figure warning
+  if (needsFigure(q)) {
+    html += `<div style="padding:.75rem 1rem;background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--radius);margin-bottom:1rem;font-size:.85rem;color:#92400e;display:flex;align-items:center;gap:.5rem"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available. Answer may require visual information.</div>`;
   }
-  html += `<div class="card"><div style="margin-bottom:1rem;font-size:.95rem;line-height:1.7" class="stem-text">${escapeHtml(q.stem)}</div>`;
+  if (q.passage) {
+    html += `<div class="passage-box">${formatPassage(q.passage)}</div>`;
+  }
+  html += `<div class="card"><div style="margin-bottom:1rem;font-size:.95rem;line-height:1.7" class="stem-text">${formatText(q.stem)}</div>`;
 
   if (q.options) {
     const letters = Object.keys(q.options).sort();
     letters.forEach(letter => {
+      const optText = q.options[letter];
+      if (!optText && optText !== 0) return; // skip empty options
       let cls = 'option-btn';
       if (prevAnswer) {
         cls += ' disabled';
@@ -700,21 +738,21 @@ function renderPracticeQuestion() {
       }
       html += `<button class="${cls}" ${prevAnswer ? '' : `onclick="practiceAnswer('${letter}')"`}>
         <span class="opt-letter">${letter}</span>
-        <span class="opt-text">${escapeHtml(q.options[letter])}</span>
+        <span class="opt-text">${formatText(q.options[letter])}</span>
       </button>`;
     });
   } else {
     if (prevAnswer) {
       html += `<div style="margin:.5rem 0">Your answer: <strong>${escapeHtml(prevAnswer.answer)}</strong> ${prevAnswer.correct ? '<span style="color:var(--green)">&#10003; Correct</span>' : '<span style="color:var(--red)">&#10007; Wrong</span> (Answer: ' + escapeHtml(q.answer) + ')'}</div>`;
     } else {
-      html += `<div class="answer-input"><input type="text" id="freeInput" placeholder="Type your answer..."><button class="btn btn-primary btn-sm" onclick="practiceAnswerFree()">Submit</button></div>`;
+      html += `<div class="answer-input"><input type="text" id="freeInput" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')practiceAnswerFree()"><button class="btn btn-primary btn-sm" onclick="practiceAnswerFree()">Submit</button></div>`;
     }
   }
 
   if (prevAnswer && q.explanation) {
     html += `<div style="margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius);font-size:.875rem;line-height:1.7">
       <div style="font-weight:700;margin-bottom:.25rem">Explanation</div>
-      <div class="explanation-text">${escapeHtml(q.explanation)}</div>
+      <div class="explanation-text">${formatText(q.explanation)}</div>
     </div>`;
   }
   html += '</div>';
@@ -867,17 +905,22 @@ function renderExamQuestion() {
 
   let html = '';
   html += `<div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Question ${examState.currentQ + 1} of ${mod.questions.length} | ${q.difficulty || ''}</div>`;
-  if (q.passage) {
-    html += `<div class="passage-box">${escapeHtml(q.passage)}</div>`;
+  if (needsFigure(q)) {
+    html += `<div style="padding:.75rem 1rem;background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--radius);margin-bottom:1rem;font-size:.85rem;color:#92400e;display:flex;align-items:center;gap:.5rem"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available.</div>`;
   }
-  html += `<div class="card"><div style="margin-bottom:1rem;font-size:.95rem;line-height:1.7" class="stem-text">${escapeHtml(q.stem)}</div>`;
+  if (q.passage) {
+    html += `<div class="passage-box">${formatPassage(q.passage)}</div>`;
+  }
+  html += `<div class="card"><div style="margin-bottom:1rem;font-size:.95rem;line-height:1.7" class="stem-text">${formatText(q.stem)}</div>`;
 
   if (q.options) {
     Object.keys(q.options).sort().forEach(letter => {
+      const optText = q.options[letter];
+      if (!optText && optText !== 0) return;
       const sel = selected === letter ? ' selected' : '';
       html += `<button class="option-btn${sel}" onclick="examSelectAnswer('${letter}')">
         <span class="opt-letter">${letter}</span>
-        <span class="opt-text">${escapeHtml(q.options[letter])}</span>
+        <span class="opt-text">${formatText(q.options[letter])}</span>
       </button>`;
     });
   } else {
@@ -1047,7 +1090,7 @@ function renderWrong() {
       const reviewInfo = review ? (review.nextReview <= now ? '<span style="color:var(--red);font-weight:600">Due now</span>' : `Next: ${new Date(review.nextReview).toLocaleDateString()}`) : '';
       html += `<div class="wrong-item">
         <div class="q-meta">${escapeHtml(q.skill || '')} | ${q.difficulty || ''} | Your: ${escapeHtml(la.answer)} | Correct: ${escapeHtml(q.answer)} | ${reviewInfo}</div>
-        <div style="font-size:.875rem;line-height:1.6" class="stem-text">${escapeHtml(q.stem).substring(0, 200)}${q.stem && q.stem.length > 200 ? '...' : ''}</div>
+        <div style="font-size:.875rem;line-height:1.6" class="stem-text">${formatText(q.stem).substring(0, 300)}${q.stem && q.stem.length > 300 ? '...' : ''}</div>
         <div class="review-btns">
           <button class="btn btn-secondary btn-sm" onclick="scheduleReview('${q.question_id}',1)">1 day</button>
           <button class="btn btn-secondary btn-sm" onclick="scheduleReview('${q.question_id}',3)">3 days</button>
