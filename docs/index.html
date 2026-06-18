@@ -84,7 +84,7 @@ label{font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;
 .option-btn.wrong .opt-letter{background:var(--red);color:#fff;border-color:var(--red)}
 .option-btn.disabled{cursor:default}
 /* PASSAGE */
-.passage-box{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;font-size:.9rem;line-height:1.8;max-height:300px;overflow-y:auto}
+.passage-box{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;font-size:.9rem;line-height:1.8;max-height:50vh;overflow-y:auto}
 /* TIMER */
 .timer{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
 .timer.warning{color:var(--red)}
@@ -254,6 +254,7 @@ img,table,pre{max-width:100%;overflow-x:auto}
     <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
       <button class="btn btn-primary" onclick="startPractice()">Start</button>
       <button class="btn btn-secondary" onclick="startPractice(true)">Unanswered Only</button>
+      <label style="display:flex;align-items:center;gap:.25rem;font-size:.8rem;color:var(--text-secondary);cursor:pointer"><input type="checkbox" id="fHideFigure" checked onchange="updateFilterCounts()"> Hide figure-dependent</label>
       <span style="font-size:.8rem;color:var(--text-muted)" id="filterCount"></span>
     </div>
   </div>
@@ -617,6 +618,8 @@ function getFilteredQuestions() {
   if (fDomain.value) qs = qs.filter(q => q.domain === fDomain.value);
   if (fSkill.value) qs = qs.filter(q => q.skill === fSkill.value);
   if (fDiff.value) qs = qs.filter(q => q.difficulty === fDiff.value);
+  const hideFig = document.getElementById('fHideFigure');
+  if (hideFig && hideFig.checked) qs = qs.filter(q => !needsFigure(q));
   return qs;
 }
 
@@ -717,8 +720,11 @@ function renderPracticeQuestion() {
   document.getElementById('practiceProgress').textContent = `Question ${practiceIndex + 1} of ${practiceQuestions.length} | ${q.difficulty || ''} | ${q.domain || ''}`;
   const answered = practiceAnswered[q.question_id];
   const prevAnswer = answered || null;
+  const bookmarked = isBookmarked(q.question_id);
 
   let html = '';
+  // Bookmark button
+  html += `<div style="display:flex;justify-content:flex-end;margin-bottom:.5rem"><button class="btn btn-sm ${bookmarked ? 'btn-primary' : 'btn-secondary'}" onclick="toggleBookmark('${q.question_id}')" style="font-size:.75rem">${bookmarked ? '★ Bookmarked' : '☆ Bookmark'}</button></div>`;
   // Missing figure warning
   if (needsFigure(q)) {
     html += `<div class="figure-warning"><span style="font-size:1.1rem">⚠️</span> This question references a figure/graph that is not available. Answer may require visual information.</div>`;
@@ -1227,6 +1233,19 @@ function renderStats() {
     });
     document.getElementById('weakSkills').innerHTML = skillHtml;
   }
+}
+
+// ========== BOOKMARKS ==========
+function isBookmarked(qid) {
+  const bm = JSON.parse(localStorage.getItem('sat-bookmarks') || '[]');
+  return bm.includes(qid);
+}
+function toggleBookmark(qid) {
+  let bm = JSON.parse(localStorage.getItem('sat-bookmarks') || '[]');
+  if (bm.includes(qid)) bm = bm.filter(id => id !== qid);
+  else bm.push(qid);
+  localStorage.setItem('sat-bookmarks', JSON.stringify(bm));
+  renderPracticeQuestion();
 }
 
 // ========== BOOT ==========
