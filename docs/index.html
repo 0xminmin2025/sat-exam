@@ -758,6 +758,14 @@ function renderPracticeQuestion() {
     }
   }
 
+  if (prevAnswer && q.answer_key_suspect) {
+    var _lvl = q.answer_key_suspect_level === '确认错误';
+    html += `<div style="margin-top:1rem;padding:.75rem 1rem;border-radius:var(--radius);font-size:.8125rem;line-height:1.6;background:${_lvl ? 'rgba(239,68,68,.1)' : 'rgba(245,158,11,.1)'};border-left:3px solid ${_lvl ? 'var(--red)' : '#f59e0b'}">
+      <strong>${_lvl ? '\u26a0 Answer key is unreliable' : '\u26a0 Answer key may be unreliable'}</strong><br>
+      This batch's answer key disagrees with two independent AI reviewers on a large scale${_lvl ? ', and has been confirmed as incorrect' : ''}. Trust your own reasoning over the marked answer.
+    </div>`;
+  }
+
   if (prevAnswer && q.explanation) {
     html += `<div style="margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius);font-size:.875rem;line-height:1.7">
       <div style="font-weight:700;margin-bottom:.25rem">Explanation</div>
