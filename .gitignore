@@ -3,3 +3,12 @@ __pycache__/
 *.pyc
 ocr_remaining.log
 site/
+
+# 含 API key，绝不入库
+.env.local
+
+# 盲答缓存（本地重跑用，几千个小文件）
+.blind_cache/
+
+# 写盘中间态
+*.json.tmp
