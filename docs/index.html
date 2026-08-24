@@ -614,6 +614,8 @@ function updateFilterCounts() {
 
 function getFilteredQuestions() {
   let qs = [...questions];
+  // 隐藏已归档题目（答案键经核实错误/不可靠，不适合练习）
+  qs = qs.filter(q => !q.archived);
   if (fTest.value) qs = qs.filter(q => q.test === fTest.value);
   if (fDomain.value) qs = qs.filter(q => q.domain === fDomain.value);
   if (fSkill.value) qs = qs.filter(q => q.skill === fSkill.value);
